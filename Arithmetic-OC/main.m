@@ -9,8 +9,18 @@
 #import <UIKit/UIKit.h>
 #import "AppDelegate.h"
 
+static inline NSMutableArray *kGetArray(){
+	NSMutableArray *b = [NSMutableArray array];
+	for (NSInteger i = 0; i < 10; i++) {
+		NSInteger a = (NSInteger)arc4random()%100;
+		[b addObject:@(a)];
+	}
+	return b;
+}
+
+
 #pragma mark - 桶排序
-void bucketSort(){
+void bucketsort(){
 	NSArray *b = @[@5,@2,@3,@1,@8];
 	NSMutableArray *a = @[].mutableCopy;
 	
@@ -43,13 +53,9 @@ void bucketSort(){
 }
 
 #pragma mark - 冒泡排序
-void bubbleSort(){
+void bubblesort(){
 	NSNumber *t;
-	NSMutableArray *b = [NSMutableArray array];
-	for (NSInteger i = 0; i < 10; i++) {
-		NSInteger a = (NSInteger)arc4random()%100;
-		[b addObject:@(a)];
-	}
+	NSMutableArray *b = kGetArray();
 	for (NSInteger i = 0; i < b.count - 1; i++) { //n个数排序,只用进行n-1趟
 		for (NSInteger j = 0; j < b.count - 1; j++) { //从第1位开始比较直到最后一位尚未归为的数 因为只进行n-1趟排序,所以最后一位则是n-1。
 			if (b[j] < b[j + 1]) {
@@ -62,10 +68,58 @@ void bubbleSort(){
 	NSLog(@"%@",b);
 }
 
+
+void quicksort(NSMutableArray *array, NSInteger left, NSInteger right){
+	
+	if (left > right) {
+		return;
+	}
+
+	//temp 基准数
+	NSInteger i, j, t, temp;
+	
+	temp = [array[left] integerValue];
+	i = left;
+	j = right;
+	
+	while (i != j) {
+		//从右向左找
+		while ([array[j] integerValue] > temp && i < j) {
+			j --;
+		}
+		
+		//从左向右找
+		while ([array[i] integerValue] < temp && i < j) {
+			i ++;
+		}
+		
+		//未相遇  如果 i==j代表找到基准数的位置
+		if (i < j) {
+			//交换位置
+			t = [array[i] integerValue];
+			array[i] = array[j];
+			array[j] = @(t);
+		}
+	}
+	
+	//i == j 确定基准数位置
+	array[left] = array[i];
+	array[i] = @(temp);
+	
+	//递归
+	//处理基准数左边数据
+	quicksort(array, left, i - 1);
+	//处理基准数右边数据
+	quicksort(array, i + 1, right);
+}
+
+
+
 int main(int argc, char * argv[]) {
 
 	@autoreleasepool {
-		bubbleSort();
+		quicksort(kGetArray(), 0, 9);
+		
 	    return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
 	}
 }
